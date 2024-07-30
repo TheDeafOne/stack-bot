@@ -34,19 +34,23 @@ def parse_answer(soup: BeautifulSoup):
     post_date = date_info[-1]
     modified_date = date_info[0] if len(date_info) > 1 else post_date
     
+    voting_container = soup.select_one('div.js-voting-container')
+    vote_count = int(voting_container.select_one('div.js-vote-count').text)
+    
+    accepted = voting_container.select_one('div.js-accepted-answer-indicator') is not None
+
     return Answer(
         html=soup,
-        votes=int(soup.select('div.js-voting-container > div.js-vote-count')),
         post_date=post_date,
         modified_date=modified_date,
-        comments=get_comments(soup)
-
+        votes=int(vote_count),
+        comments=get_comments(soup),
+        accepted=accepted
     )
 
 def parse_question(soup: BeautifulSoup):
-    # print(soup)
     answers = list(map(parse_answer, soup.find_all('div', {'class': 'answer'})))
-
+    print(answers[0])
     
         
 
