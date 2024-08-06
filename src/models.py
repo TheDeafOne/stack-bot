@@ -14,7 +14,7 @@ class Post:
 class Answer(Post):
     accepted: bool
     def __repr__(self):
-        return f'{self.__class__.__name__}(post_date={self.post_date}, votes={self.votes}), accepted={self.accepted}'
+        return f'{self.__class__.__name__}(post_date={self.post_date}, votes={self.votes}, accepted={self.accepted})'
 
 
 @dataclass
