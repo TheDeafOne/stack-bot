@@ -37,7 +37,7 @@ def parse_answer(soup: BeautifulSoup):
     voting_container = soup.select_one('div.js-voting-container')
     vote_count = int(voting_container.select_one('div.js-vote-count').text)
     
-    accepted = voting_container.select_one('div.js-accepted-answer-indicator') is not None
+    accepted = 'd-none' not in voting_container.select_one('div.js-accepted-answer-indicator')['class']
 
     return Answer(
         html=soup,
@@ -50,7 +50,8 @@ def parse_answer(soup: BeautifulSoup):
 
 def parse_question(soup: BeautifulSoup):
     answers = list(map(parse_answer, soup.find_all('div', {'class': 'answer'})))
-    print(answers[0])
+    print(answers)
+    print(len(answers))
     
         
 
@@ -65,5 +66,4 @@ def get_questions(urls):
     
 
 if __name__ == '__main__':
-    questions = get_question_urls(1)
     get_questions(['https://stackoverflow.com/questions/6287529/how-to-find-children-of-nodes-using-beautifulsoup'])
