@@ -29,11 +29,14 @@ def get_comments(soup: BeautifulSoup):
     ]
     return comments
 
-def parse_answer(soup: BeautifulSoup):
+def get_dates(soup: BeautifulSoup):
     date_info = [info.text for info in soup.select('span.relativetime')]
     post_date = date_info[-1]
     modified_date = date_info[0] if len(date_info) > 1 else post_date
-    
+    return post_date, modified_date
+
+def parse_answer(soup: BeautifulSoup):
+    post_date, modified_date = get_dates(soup)
     voting_container = soup.select_one('div.js-voting-container')
     vote_count = int(voting_container.select_one('div.js-vote-count').text)
     
@@ -43,27 +46,49 @@ def parse_answer(soup: BeautifulSoup):
         html=soup,
         post_date=post_date,
         modified_date=modified_date,
-        votes=int(vote_count),
+        votes=vote_count,
         comments=get_comments(soup),
         accepted=accepted
     )
 
-def parse_question(soup: BeautifulSoup):
+
+def parse_question(soup: BeautifulSoup, url: str):
     answers = list(map(parse_answer, soup.find_all('div', {'class': 'answer'})))
-    print(answers)
-    print(len(answers))
+    question = soup.select_one('div.question')
+    post_date, modified_date = get_dates(soup)
+    voting_container = question.select_one('div.js-voting-container')
+    vote_count = int(voting_container.select_one('div.js-vote-count').text)
+    
+    title = soup.select_one('a.question-hyperlink').text
+    view_count_div = soup.find_all('div', title=lambda title: title and 'viewed' in title.lower())[0]
+    view_count = int(view_count_div['title'].split()[1].replace(',', ''))
+
+    return Question(
+        html=soup,
+        post_date=post_date,
+        modified_date=modified_date,
+        votes=vote_count,
+        comments=get_comments(question),
+        url=url,
+        title=title,
+        view_count=view_count,
+        answers=answers
+    )
     
         
 
 
 def get_questions(urls):
+    questions = []
     for url in urls:
         response = requests.get(url)
         soup = BeautifulSoup(response.text, BS_PARSER)
-        parse_question(soup)
+        questions.append(parse_question(soup, url))
         break
+    return questions
 
     
 
 if __name__ == '__main__':
-    get_questions(['https://stackoverflow.com/questions/6287529/how-to-find-children-of-nodes-using-beautifulsoup'])
+    questions = get_questions(['https://stackoverflow.com/questions/6287529/how-to-find-children-of-nodes-using-beautifulsoup'])
+    print(questions)

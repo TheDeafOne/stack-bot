@@ -23,3 +23,6 @@ class Question(Post):
     title: str
     view_count: int
     answers: int
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(title="{self.title}", post_date={self.post_date}, votes={self.votes}, view_count={self.view_count})'
