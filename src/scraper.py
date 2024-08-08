@@ -84,11 +84,11 @@ def get_questions(urls):
         response = requests.get(url)
         soup = BeautifulSoup(response.text, BS_PARSER)
         questions.append(parse_question(soup, url))
-        break
     return questions
 
     
 
 if __name__ == '__main__':
-    questions = get_questions(['https://stackoverflow.com/questions/6287529/how-to-find-children-of-nodes-using-beautifulsoup'])
+    question_urls = get_question_urls(1)
+    questions = get_questions(question_urls)
     print(questions)
