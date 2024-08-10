@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 
-from src.scraper.scraper import get_questions_on_page
+from scraper.scraper import get_questions_on_page
 
 app = Flask(__name__)
 questions = get_questions_on_page(1)

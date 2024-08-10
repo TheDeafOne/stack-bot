@@ -3,7 +3,7 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
-from models import Answer, Question
+from scraper.models import Answer, Question
 
 PAGE_SIZE = 50
 STACK_OVERFLOW_URL = 'https://stackoverflow.com/'
