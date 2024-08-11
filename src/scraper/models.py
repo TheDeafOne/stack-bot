@@ -8,6 +8,7 @@ class Post:
     modified_date: str
     votes: int
     comments: list[str]
+    text: str
 
 
 @dataclass

@@ -2,8 +2,9 @@ from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
+from markdownify import markdownify as md
 
-from scraper.models import Answer, Question
+from src.scraper.models import Answer, Question
 
 PAGE_SIZE = 50
 STACK_OVERFLOW_URL = 'https://stackoverflow.com/'
@@ -41,6 +42,7 @@ def parse_answer(soup: BeautifulSoup):
     vote_count = int(voting_container.select_one('div.js-vote-count').text)
     
     accepted = 'd-none' not in voting_container.select_one('div.js-accepted-answer-indicator')['class']
+    answer_text = soup.select_one('div.js-post-body').text
 
     return Answer(
         html=soup,
@@ -48,11 +50,14 @@ def parse_answer(soup: BeautifulSoup):
         modified_date=modified_date,
         votes=vote_count,
         comments=get_comments(soup),
-        accepted=accepted
+        accepted=accepted,
+        text=answer_text
     )
 
 
-def parse_question(soup: BeautifulSoup, url: str):
+def parse_question(url: str):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, BS_PARSER)
     answers = list(map(parse_answer, soup.find_all('div', {'class': 'answer'})))
     question = soup.select_one('div.question')
     post_date, modified_date = get_dates(soup)
@@ -62,6 +67,7 @@ def parse_question(soup: BeautifulSoup, url: str):
     title = soup.select_one('a.question-hyperlink').text
     view_count_div = soup.find_all('div', title=lambda title: title and 'viewed' in title.lower())[0]
     view_count = int(view_count_div['title'].split()[1].replace(',', ''))
+    question_text = md(str(question.select_one('div.js-post-body'))) # Convert to markdown
 
     return Question(
         html=soup,
@@ -72,20 +78,20 @@ def parse_question(soup: BeautifulSoup, url: str):
         url=url,
         title=title,
         view_count=view_count,
-        answers=answers
+        answers=answers,
+        text=question_text
     )
-    
-        
 
 
 def get_questions(urls):
     questions = []
     for url in urls:
-        response = requests.get(url)
-        soup = BeautifulSoup(response.text, BS_PARSER)
-        questions.append(parse_question(soup, url))
+        questions.append(parse_question(url))
     return questions
 
 def get_questions_on_page(page):
     question_urls = get_question_urls(page)
     return get_questions(question_urls)
+
+if __name__ == '__main__':
+    q = parse_question('https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git')

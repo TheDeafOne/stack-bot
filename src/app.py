@@ -7,7 +7,8 @@ questions = get_questions_on_page(1)
 
 @app.route("/")
 def index():
-
+    test_question = questions[0]
+    
     return render_template('index.html', questions=questions)
 
 if __name__ == '__main__':
