@@ -6,16 +6,13 @@ import src.config as config
 
 SAPLING_URL = 'https://api.sapling.ai/api/v1/edits'
 
-class Editor:
-    def __init__(self):
-        self.session_id = str(uuid.uuid4())
-    
+class Editor:    
     def edit(self, text):
         try:
             response = requests.post(
                 "https://api.sapling.ai/api/v1/edits",
                 json={
-                    "key": config.SAPLING_API_KEY,
+                    "key": str(uuid.uuid4()),
                     "text": text,
                     "session_id": self.session_id
                 }
