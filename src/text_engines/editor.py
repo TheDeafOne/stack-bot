@@ -1,28 +1,30 @@
-import requests
 import uuid
+
+import requests
+
 import src.config as config
 
 SAPLING_URL = 'https://api.sapling.ai/api/v1/edits'
 
 class Editor:
     def __init__(self):
-        self.api_key = config.SAPLING_API_KEY
-        self.session_id = uuid.uuid4()
+        self.session_id = str(uuid.uuid4())
     
     def edit(self, text):
         try:
             response = requests.post(
-                SAPLING_URL, 
+                "https://api.sapling.ai/api/v1/edits",
                 json={
-                    'key': self.api_key,
-                    'text': text,
-                    'session_id': self.session_id
+                    "key": config.SAPLING_API_KEY,
+                    "text": text,
+                    "session_id": self.session_id
                 }
             )
             response_json = response.json()
-
-            if response.status_code == 200:
-                return response_json['result']
+            if response.ok:
+                return response_json
+            else:
+                raise Exception(f"{response_json}")
         except Exception as e:
             print(f'An error occurred: {e}')
         

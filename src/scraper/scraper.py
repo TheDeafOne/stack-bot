@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from markdownify import markdownify as md
 
 from src.scraper.models import Answer, Question
+from src.text_engines.editor import Editor
 
 PAGE_SIZE = 50
 STACK_OVERFLOW_URL = 'https://stackoverflow.com/'
@@ -95,3 +96,5 @@ def get_questions_on_page(page):
 
 if __name__ == '__main__':
     q = parse_question('https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git')
+    r = Editor().edit(q.text)
+    print(r)
