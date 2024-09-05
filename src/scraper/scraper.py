@@ -11,9 +11,10 @@ PAGE_SIZE = 50
 STACK_OVERFLOW_URL = 'https://stackoverflow.com/'
 BS_PARSER = 'html.parser'
 DATE_FORMAT = '%b %d, %Y at %H:%M'
+DEFAULT_SORT_VALUE = 'Newest'
 
-def so_url(page):
-    return f'{STACK_OVERFLOW_URL}/questions?page={page}&pagesize={PAGE_SIZE}'
+def so_url(page, sort_value=DEFAULT_SORT_VALUE):
+    return f'{STACK_OVERFLOW_URL}/questions?page={page}&pagesize={PAGE_SIZE}&sort={sort_value}'
 
 def get_question_urls(page):
     url = so_url(page)
@@ -127,10 +128,14 @@ def get_questions_on_page(page):
     question_urls = get_question_urls(page)
     return get_questions(question_urls)
 
+def get_num_pages():
+    response = requests.get(so_url(1))
+    soup = BeautifulSoup(response.text, BS_PARSER)
+    page_numbers = [int(page.text) for page in soup.select('a.s-pagination--item') if page.text.isdigit()]
+    return max(page_numbers)
 
 if __name__ == '__main__':
-    q = get_question_summaries(1)
-    print(q)
+    print(get_num_pages())
     # q = parse_full_question('https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git')
     # print(q)
     # r = Editor().edit(q.text)
