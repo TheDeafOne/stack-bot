@@ -9,22 +9,21 @@ from src.text_engines.editor import Editor
 
 PAGE_SIZE = 50
 STACK_OVERFLOW_URL = 'https://stackoverflow.com/'
-QUESTION_HEADER_CLASS = 'h3.s-post-summary--content-title'
 BS_PARSER = 'html.parser'
 DATE_FORMAT = '%b %d, %Y at %H:%M'
 
-def so_url(page, page_size):
-    return f'{STACK_OVERFLOW_URL}/questions?tab=newest&page={page}&pagesize={page_size}'
+def so_url(page):
+    return f'{STACK_OVERFLOW_URL}/questions?page={page}&pagesize={PAGE_SIZE}'
 
 def get_question_urls(page):
-    url = so_url(page, PAGE_SIZE)
+    url = so_url(page)
     response = requests.get(url)
     soup = BeautifulSoup(response.text, BS_PARSER)
-    question_urls = [STACK_OVERFLOW_URL + question_header['href'] for question_header in soup.select(f'{QUESTION_HEADER_CLASS} > a')]
+    question_urls = [STACK_OVERFLOW_URL + question_header['href'] for question_header in soup.select('h3.s-post-summary--content-title > a')]
     return question_urls
 
 def get_question_summaries(page):
-    url = so_url(page, PAGE_SIZE)
+    url = so_url(page)
     response = requests.get(url)
     soup = BeautifulSoup(response.text, BS_PARSER)
     question_summaries = soup.find_all('div', class_='s-post-summary js-post-summary')
@@ -127,6 +126,7 @@ def get_questions(urls):
 def get_questions_on_page(page):
     question_urls = get_question_urls(page)
     return get_questions(question_urls)
+
 
 if __name__ == '__main__':
     q = get_question_summaries(1)
