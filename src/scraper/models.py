@@ -27,3 +27,16 @@ class Question(Post):
 
     def __repr__(self):
         return f'{self.__class__.__name__}(title="{self.title}", post_date={self.post_date}, votes={self.votes}, view_count={self.view_count})'
+
+@dataclass
+class QuestionSummary:
+    title: str
+    post_date: str
+    view_count: int
+    url: str
+    text: str
+    answer_count: int
+    vote_count: int
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(title="{self.title}", post_date={self.post_date}, view_count={self.view_count}, answer_count={self.answer_count}, vote_count={self.vote_count})'
