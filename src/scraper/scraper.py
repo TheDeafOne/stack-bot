@@ -41,8 +41,10 @@ def get_question_summaries(page):
         excerpt = question.find('div', class_='s-post-summary--content-excerpt').text.strip()
         # tags = [tag.text for tag in question.find_all('a', class_='post-tag')]
         # user = question.find('div', class_='s-user-card--link').text.strip()
-        asked_time = question.find('time', class_='s-user-card--time').find('span', class_='relativetime')['title']
         
+        asked_time_node = question.find('time', class_='s-user-card--time').find('span', class_='relativetime')
+        asked_time = asked_time_node['time'] if 'title' in asked_time_node else None
+
         questions.append(
             QuestionSummary(
                 title=title,
@@ -134,8 +136,11 @@ def get_num_pages():
     page_numbers = [int(page.text) for page in soup.select('a.s-pagination--item') if page.text.isdigit()]
     return max(page_numbers)
 
+
 if __name__ == '__main__':
-    print(get_num_pages())
+    num_pages = get_num_pages()
+    l = get_question_summaries(num_pages)
+    print(l)
     # q = parse_full_question('https://stackoverflow.com/questions/927358/how-do-i-undo-the-most-recent-local-commits-in-git')
     # print(q)
     # r = Editor().edit(q.text)
